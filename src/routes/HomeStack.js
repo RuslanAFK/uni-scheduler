@@ -8,7 +8,10 @@ const screens = {
         screen: HomeScreen
     },
     Add: {
-        screen: AddScreen
+        screen: AddScreen,
+        navigationOptions: {
+            title: 'Add New Classes',
+        }
     }
 }
 

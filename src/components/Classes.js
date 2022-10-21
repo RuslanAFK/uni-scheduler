@@ -1,5 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from "react";
+import { weeks } from '../db-holder/SelectItems';
+import { generateUniqueId } from '../helpers/Helpers';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 export class ClassesModel {
@@ -16,22 +19,81 @@ export class ClassesModel {
 }
 
 export default function Classes({ value }) {
-  return (
-    <View style={styles.container}>
-      <Text>{"Name: " + value.name}</Text>
-      <Text>{"Week: " + value.week}</Text>
-      <Text>{"Url: " + value.url}</Text>
-      <Text>{"Address: " + value.address}</Text>
-      <Text>{"Professor: " + value.professor}</Text>
-      <Text>{"Type: " + value.type}</Text>
-      <Text>{"Time: " + value.time}</Text>
 
-    </View>
+  const { name, address, professor, type, time, week, url, weekDay } = value;
+
+  const onAddressPress = async () => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    }
+  }
+
+  const onLongPressHandler = () => {
+    const id = generateUniqueId(weekDay, name, time);
+    Alert.alert(
+      `Do you want to delete ${name} at ${time} ${weekDay}?`,
+      "Answer below",
+      [
+        {
+          text: "No",
+          onPress: () => { },
+          style: "cancel"
+        },
+        {
+          text: "Yes", onPress: async () => {
+            try {
+              await AsyncStorage.removeItem(id)
+            } catch (err) {
+            }
+          }
+        }
+      ])
+  }
+
+  return (
+    <TouchableOpacity style={styles.classesContainer} onLongPress={onLongPressHandler}>
+      <Text
+        style={url === '' ? styles.nameContainer : styles.nameLinkContainer}
+        onPress={url === '' ? () => { } : onAddressPress}
+      >
+        {name}
+      </Text>
+
+      {week !== weeks[0] && <Text style={styles.classesPropContainer}>
+        {week}
+      </Text>}
+
+      {address !== '' && <Text style={styles.classesPropContainer}>
+        {address}
+      </Text>}
+
+      <Text style={styles.classesPropContainer}>
+        {`${type} at ${time}`}
+      </Text>
+
+      <Text style={styles.classesPropContainer}>
+        {"Professor: " + professor}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  classesContainer: {
+    borderWidth: 1,
+    padding: 10,
+    margin: 5,
+    borderRadius: 8,
+  },
+  classesPropContainer: {
 
   },
+  nameContainer: {
+    textAlign: "center",
+  },
+  nameLinkContainer: {
+    textAlign: "center",
+    color: 'blue',
+  }
 });

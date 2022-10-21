@@ -1,38 +1,39 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Picker } from "@react-native-picker/picker";
+import { Alert, Button, ScrollView, StyleSheet, Text } from 'react-native';
 import React from 'react';
 import { Component } from 'react';
 import { ClassesModel } from '../components/Classes';
 import TextControl from "../components/controls/TextControl";
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { classesTypes, weekdays, weeks } from '../db-holder/SelectItems';
+import SelectControl from '../components/controls/SelectControl';
+import { generateUniqueId } from '../helpers/Helpers';
+import { validateData } from '../helpers/Validators';
 
 export default class AddScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            weekDay: "Monday",
+            weekDay: weekdays[0],
             name: "",
-            week: "both",
+            week: weeks[0],
             url: "",
             address: "",
             professor: "",
-            type: "lection",
-            hours: "08",
-            minutes: "30"
+            type: classesTypes[0],
+            hours: 8,
+            minutes: 30,
+            count: 1,
         }
     }
 
-    generateUniqueId = () => {
-        const { week, weekDay, name, url, address, professor, type, hours, minutes } = this.state;
-        const time = hours + ":" + minutes
-        return weekDay + name + time
-    }
-
     onSubmit = async () => {
+        if (!validateData(this.state)) {
+            return;
+        }
         const { week, weekDay, name, url, address, professor, type, hours, minutes } = this.state;
         const time = hours + ":" + minutes
-        const id = this.generateUniqueId();
+        const id = generateUniqueId(weekDay, name, time);
         try {
             const foundClasses = await AsyncStorage.getItem(id);
             if (foundClasses) {
@@ -40,20 +41,21 @@ export default class AddScreen extends Component {
             }
             const classes = new ClassesModel(weekDay, name, week, url, address, professor, type, time);
             await AsyncStorage.setItem(id, JSON.stringify(classes));
+
+            Alert.alert(`${name} at ${time} ${weekDay} was successfully added!`);
         } catch (error) {
-            console.error(error);
+            Alert.alert(error.message);
         }
     }
 
     render() {
         return (
-            <View style={styles.container}>
-                <Text>Add classes</Text>
-
-                <TextControl
-                    title="Enter weekday"
+            <ScrollView style={styles.container}>
+                <SelectControl
+                    title="Select weekday"
                     value={this.state.weekDay}
                     onChangeValue={val => this.setState({ weekDay: val })}
+                    items={weekdays}
                 />
                 <TextControl
                     title="Enter name"
@@ -61,19 +63,20 @@ export default class AddScreen extends Component {
                     onChangeValue={val => this.setState({ name: val })}
                 />
 
-
-
-                <Text>Select weeks</Text>
-                <Picker
-                    style={styles.picker}
+                <SelectControl
                     selectedValue={this.state.week}
-                    onValueChange={(val) => this.setState({week: val})}
-                    mode="dropdown"
-                >
-                    <Picker.Item label="Both" value="both"/>
-                    <Picker.Item label="First" value="first"/>
-                    <Picker.Item label="Second" value="second"/>
-                </Picker>
+                    onValueChange={(val) => this.setState({ week: val })}
+                    items={weeks}
+                    title="Select week"
+                />
+
+                <TextControl
+                    type="numeric"
+                    keyboardType='numeric'
+                    value={this.state.count}
+                    onChangeValue={val => this.setState({ count: val })}
+                    title="Enter Count"
+                />
 
                 <TextControl
                     textContentType="URL"
@@ -93,20 +96,15 @@ export default class AddScreen extends Component {
                     title="Enter Professor Name"
                 />
 
-                <Text>type</Text>
-                <Picker
-                    style={styles.picker}
+                <SelectControl
+                    title="Select type"
                     selectedValue={this.state.type}
-                    onValueChange={(val) => this.setState({type: val})}
-                    mode="dropdown"
-                >
-                    <Picker.Item label="Lection" value="lection"/>
-                    <Picker.Item label="Lab" value="lab"/>
-                    <Picker.Item label="Practical" value="practical"/>
-                </Picker>
+                    onValueChange={(val) => this.setState({ type: val })}
+                    items={classesTypes}
+                />
 
-                <Text>Time</Text>
                 <TextControl
+                    title="Enter hours and minutes"
                     value={this.state.hours}
                     onChangeValue={val => this.setState({ hours: val })}
                     type="numeric"
@@ -118,25 +116,14 @@ export default class AddScreen extends Component {
                     type="numeric"
                     keyboardType='numeric'
                 />
-
-                <Button onPress={this.onSubmit} title={"Submit"}/>
-            </View>
+                <Button onPress={this.onSubmit} title={"Submit"} />
+            </ScrollView>
         );
     }
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    picker: {
-        marginVertical: 30,
-        width: 300,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: "#666",
-    },
+        margin: 10,
+    }
 });

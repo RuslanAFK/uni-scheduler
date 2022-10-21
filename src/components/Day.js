@@ -1,23 +1,32 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, {Component, useEffect, useState} from "react";
-import Classes, {ClassesModel} from "./Classes";
+import React, { Component, useEffect, useState } from "react";
+import Classes, { ClassesModel } from "./Classes";
 
-export const Day = ({classes, weekDay}) => {
+export const Day = ({ classes, weekDay }) => {
+  const sortedClasses = classes.sort((a, b) => a.count - b.count)
   return (
-      <View style={styles.container}>
-          <Text>{weekDay}</Text>
-        {classes
-            .filter(value => value.weekDay === weekDay)
-            .map((value) =>
-           (<Classes key={value.id} value={value} />)
+    <View style={styles.dayContainer}>
+      <Text style={styles.dayNameContainer}>{weekDay}</Text>
+      {sortedClasses
+        .filter(value => value.weekDay === weekDay)
+        .map((value) =>
+          (<Classes key={value.id} value={value} />)
         )}
-      </View>
+    </View>
   );
 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    
+  dayContainer: {
+    margin: 10,
+    padding: 20,
+    borderWidth: 1,
+    borderRadius: 30,
   },
+  dayNameContainer: {
+    marginBottom: 10,
+    fontSize: 20,
+    textAlign: "center",
+  }
 });
