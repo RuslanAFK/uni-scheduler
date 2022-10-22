@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 export class ClassesModel {
-  constructor(weekDay, name, week, url, address, professor, type, time) {
+  constructor(weekDay, name, week, url, address, professor, type, time, count) {
     this.weekDay = weekDay;
     this.name = name;
     this.week = week;
@@ -15,12 +15,13 @@ export class ClassesModel {
     this.professor = professor;
     this.type = type;
     this.time = time;
+    this.count = count;
   }
 }
 
 export default function Classes({ value }) {
 
-  const { name, address, professor, type, time, week, url, weekDay } = value;
+  const { name, address, professor, type, time, week, url, weekDay, count } = value;
 
   const onAddressPress = async () => {
     const supported = await Linking.canOpenURL(url);
@@ -57,7 +58,7 @@ export default function Classes({ value }) {
         style={url === '' ? styles.nameContainer : styles.nameLinkContainer}
         onPress={url === '' ? () => { } : onAddressPress}
       >
-        {name}
+        {`${count}. ${name}`}
       </Text>
 
       {week !== weeks[0] && <Text style={styles.classesPropContainer}>

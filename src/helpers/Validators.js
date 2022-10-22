@@ -3,10 +3,10 @@ import { Alert } from "react-native";
 export const validateData = (data) => {
     const { name, url, address, professor, hours, minutes, count } = data;
     const urlRegex = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/);
-    const addressRegex = new RegExp(/^[A-Z][a-z\s\.,\d]{3,}$/);
-    const professorRegex = new RegExp(/^[A-Z][a-z]+\s[a-zA-Z.\s]*$/);
+    const addressRegex = new RegExp(/^[А-ЩЬЮЯҐЄІЇA-Z][а-щьюяґєіїa-z\s.,']{3,}$/);
+    const professorRegex = new RegExp(/^[А-ЩЬЮЯҐЄІЇA-Z][a-zа-щьюяґєії']+\s?[А-ЩЬЮЯҐЄІЇа-щьюяґєіїA-za-z.'\s]*$/);
 
-    if (!/^[a-zA-Z]{3,}[a-zA-Z\s]*$/.test(name)) {
+    if (!/^[А-ЩЬЮЯҐЄІЇA-Z][А-ЩЬЮЯҐЄІЇа-щьюяґєіїA-Za-z']{2,}[А-ЩЬЮЯҐЄІЇа-щьюяґєіїA-Za-z'\s]*$/.test(name)) {
         Alert.alert("Name must contain at least 3 characters in Latin letters.");
         return false;
     }

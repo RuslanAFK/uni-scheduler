@@ -3,11 +3,11 @@ import React, { Component, useEffect, useState } from "react";
 import Classes, { ClassesModel } from "./Classes";
 
 export const Day = ({ classes, weekDay }) => {
-  const sortedClasses = classes.sort((a, b) => a.count - b.count)
+  classes.sort((a, b) => a.count - b.count)
   return (
     <View style={styles.dayContainer}>
       <Text style={styles.dayNameContainer}>{weekDay}</Text>
-      {sortedClasses
+      {classes
         .filter(value => value.weekDay === weekDay)
         .map((value) =>
           (<Classes key={value.id} value={value} />)

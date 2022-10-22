@@ -31,7 +31,7 @@ export default class AddScreen extends Component {
         if (!validateData(this.state)) {
             return;
         }
-        const { week, weekDay, name, url, address, professor, type, hours, minutes } = this.state;
+        const { week, weekDay, name, url, address, professor, type, hours, minutes, count } = this.state;
         const time = hours + ":" + minutes
         const id = generateUniqueId(weekDay, name, time);
         try {
@@ -39,7 +39,7 @@ export default class AddScreen extends Component {
             if (foundClasses) {
                 throw Error("Item with the same id already exists.")
             }
-            const classes = new ClassesModel(weekDay, name, week, url, address, professor, type, time);
+            const classes = new ClassesModel(weekDay, name, week, url, address, professor, type, time, count);
             await AsyncStorage.setItem(id, JSON.stringify(classes));
 
             Alert.alert(`${name} at ${time} ${weekDay} was successfully added!`);
